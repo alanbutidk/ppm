@@ -8,7 +8,7 @@ ppm handles your projects easily, initiliaze a project, code, test...
 
 Using ppm CLI is very easy. To get its help, run: `ppm help` or `ppm h` to get its help screen:
 
-```sh
+```
 ppm - Python Project Manager.
 Version: v1.0.0
 
