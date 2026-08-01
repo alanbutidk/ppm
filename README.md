@@ -1,6 +1,6 @@
 # PPM - Python Project Manager
 
-**ppm** or **Python Project Manager** is a tool written in `[Python](https://python.org)`
+**ppm** or **Python Project Manager** is a tool written in [Python](https://python.org)
 
 ppm handles your projects easily, initiliaze a project, code, test...
 
@@ -14,9 +14,9 @@ Version: v1.0.0
 
 Commands are:
 
-new/n :: Create a directory and initliaze it
-init :: Initliaze a project
-deinit/di :: Deinitliaze a project
+new/n :: Create a directory and initialize it
+init :: Initialize a project
+deinit/di :: Deinitialize a project
 clone/cl :: Clone a git repo (no system git required) and set up its dependencies
 
 check/c :: Check project using ruff.
@@ -40,6 +40,9 @@ help/h :: Print help and exit
 version/v :: Print version and exit
 ```
 
+**ppm** auto-adds a `BATCH/SHELL` Script to the project directory (but placed in .gitignore), So you dont need to add ppm to your PATH.
+
+
 Now you may have noticed cart and order. What are those?
 
 ## Carting and ordering
@@ -52,7 +55,7 @@ Now you may have noticed cart and order. What are those?
 
 ## Cloning a repo
 
-`ppm clone <repo>` (or `ppm cl`) clones a remote git repository **without requiring a system git installation** — it speaks git's smart-HTTP protocol directly.
+`ppm clone <repo>` (or `ppm cl`) clones a remote git repository **without requiring a system git installation**.
 
 ```sh
 ppm clone alanbutidk/ppm          # short GitHub form
@@ -60,7 +63,7 @@ ppm clone https://github.com/user/repo mydir
 ppm clone user/repo --branch dev
 ```
 
-If the cloned repo has a `ppm.toml`, ppm automatically builds a venv for it; if it also has a `ppm.lock`, every locked (non-carted) package gets installed right away — so `ppm clone <repo> && cd <repo> && ppm run` can take you from nothing to a running project in one line, with no git or manual pip step required.
+If the cloned repo has a `ppm.toml`, ppm automatically builds a venv for it; if it also has a `ppm.lock`, every locked (non-carted) package gets installed right away; so `ppm clone <repo> && cd <repo> && ppm run` can take you from nothing to a running project in one line, with no git or manual pip step required.
 
 ## Scripts
 
