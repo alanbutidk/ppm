@@ -1,0 +1,9 @@
+__pycache__
+*.exe
+ppm.lock
+ppm.toml
+.ppm_paths
+.venv
+.ruff_cache
+
+

@@ -1,0 +1,21 @@
+get OS
+
+if OS==Windows_NT then
+  EXE = .exe
+  PY = python
+else then
+  EXE = 
+  PY = python3
+
+let APP = ppm(EXE)
+let SRC = ppm.py
+
+CCFLAGS = -o (APP) (SRC) -npdb -no -runtime
+
+recipe test
+recipe build
+recipe clean
+
+test:
+  echo Running test...
+
