@@ -509,7 +509,7 @@ def DeInitProject() -> None | bool:
     Path(".gitignore").unlink() if Path(".gitignore").exists() else ""
     Path("ppm.lock").unlink() if Path("ppm.lock").exists() else ""
     Path("ppm.toml").unlink() if Path("ppm.toml").exists() else ""
-    Path("pyrightconfig.json").unlink() if Path("ppm.lock").exists() else ""
+    Path("pyrightconfig.json").unlink() if Path("pyrightconfig.json").exists() else ""
 
     print(f"{CYN}Deinitialized project!{RST}")
     return True
