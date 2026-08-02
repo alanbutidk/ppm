@@ -122,7 +122,7 @@ ppm build --no-install          # fail instead of auto-installing the backend if
 ppm build --keep-junk           # keep PyInstaller's build/ dir or Nuitka's .build dir afterward
 ```
 
-The backend always runs under the exact same interpreter it's installed into — the project's venv by default; so it can never end up installed in one Python environment while ppm tries to use it from another. If the backend isn't installed yet, ppm installs it automatically (unless `--no-install` is passed) using that same venv's pip.
+The backend always runs under the exact same interpreter it's installed into - the project's venv by default; so it can never end up installed in one Python environment while ppm tries to use it from another. If the backend isn't installed yet, ppm installs it automatically (unless `--no-install` is passed) using that same venv's pip.
 
 ## Make my project
 
