@@ -949,7 +949,7 @@ RST = "\033[0m"
 def _Help():
     print(f"""
 {YLW}ppm - Python Project Manager.{RST}
-{YLW}Version: v1.0.0{RST}
+{YLW}Version: v1.3.1{RST}
 
 {YLW}Commands are:{RST}
 

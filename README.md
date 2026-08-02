@@ -2,7 +2,7 @@
 
 **ppm** or **Python Project Manager** is a tool written in [Python](https://python.org)
 
-ppm handles your projects easily, initiliaze a project, code, test...
+ppm handles your projects easily, initialize a project, code, test...
 
 ## Basic ppm usage
 
@@ -10,7 +10,7 @@ Using ppm CLI is very easy. To get its help, run: `ppm help` or `ppm h` to get i
 
 ```
 ppm - Python Project Manager.
-Version: v1.0.0
+Version: v1.3.1
 
 Commands are:
 
@@ -36,12 +36,10 @@ list/l :: List installed and carted dependencies
 status/s :: Show project overview (venv, main file, dependency counts)
 doctor/doc :: Run a full consistency check across venv, toml, and lockfile (supports --fix)
 scan-tree/st :: Recursively print a tree of all Python files in a directory
+build/b :: Build a standalone executable via PyInstaller or Nuitka (--backend, --global, --keep-junk)
 help/h :: Print help and exit
 version/v :: Print version and exit
 ```
-
-**ppm** auto-adds a `BATCH/SHELL` Script to the project directory (but placed in .gitignore), So you dont need to add ppm to your PATH.
-
 
 Now you may have noticed cart and order. What are those?
 
@@ -63,7 +61,7 @@ ppm clone https://github.com/user/repo mydir
 ppm clone user/repo --branch dev
 ```
 
-If the cloned repo has a `ppm.toml`, ppm automatically builds a venv for it; if it also has a `ppm.lock`, every locked (non-carted) package gets installed right away; so `ppm clone <repo> && cd <repo> && ppm run` can take you from nothing to a running project in one line, with no git or manual pip step required.
+If the cloned repo has a `ppm.toml`, ppm automatically builds a venv for it; if it also has a `ppm.lock`, every locked (non-carted) package gets installed right away — so `ppm clone <repo> && cd <repo> && ppm run` can take you from nothing to a running project in one line, with no git or manual pip step required.
 
 ## Scripts
 
@@ -111,10 +109,25 @@ ppm scan-tree ./src           # scan a specific directory
 ppm scan-tree --all           # include venv/cache/git directories too
 ```
 
+## Building a standalone executable
+
+`ppm build` (or `ppm b`) bundles your project into a single standalone executable using PyInstaller (default) or Nuitka.
+
+```sh
+ppm build                       # builds the ppm.toml main_file with PyInstaller
+ppm build main.py               # build a specific file
+ppm build --backend nuitka      # use Nuitka instead
+ppm build --global              # build with the system python instead of the project venv
+ppm build --no-install          # fail instead of auto-installing the backend if missing
+ppm build --keep-junk           # keep PyInstaller's build/ dir or Nuitka's .build dir afterward
+```
+
+The backend always runs under the exact same interpreter it's installed into — the project's venv by default; so it can never end up installed in one Python environment while ppm tries to use it from another. If the backend isn't installed yet, ppm installs it automatically (unless `--no-install` is passed) using that same venv's pip.
+
 ## Make my project
 
 First, run `ppm new` or `ppm init` (init if your inside the directory that needs to have the project)
-Then do the setup tasks it asks you; or pass `--yes` (`-y`) to skip the prompts and use sensible defaults, which is handy for scripts/CI.
+Then do the setup tasks it asks you, or pass `--yes` (`-y`) to skip the prompts and use sensible defaults, which is handy for scripts/CI.
 
 A main file (e.g. `main.py`) is scaffolded automatically if it doesn't already exist, so the project is runnable right away.
 
@@ -131,4 +144,4 @@ And to test after coding, run: ```ppm run```
 
 ## License
 
-This project is licensed on: `GPLv3`, If you bundle/modify this project. You'll need to Open-Source it.
+This project is licensed on: `GPLv3`, If you bundle/modify this project, Open-Source it.
