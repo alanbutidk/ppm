@@ -61,7 +61,7 @@ ppm clone https://github.com/user/repo mydir
 ppm clone user/repo --branch dev
 ```
 
-If the cloned repo has a `ppm.toml`, ppm automatically builds a venv for it; if it also has a `ppm.lock`, every locked (non-carted) package gets installed right away — so `ppm clone <repo> && cd <repo> && ppm run` can take you from nothing to a running project in one line, with no git or manual pip step required.
+If the cloned repo has a `ppm.toml`, ppm automatically builds a venv for it; if it also has a `ppm.lock`, every locked (non-carted) package gets installed right away. So `ppm clone <repo> && cd <repo> && ppm run` can take you from nothing to a running project in one line, with no git or manual pip step required.
 
 ## Scripts
 

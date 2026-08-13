@@ -1,5 +1,9 @@
-# All of these are ppm generated things so they dont spill.
+# All of these are ppm-generated things so they dont spill in ppm repository.
 .venv
 .ppm_paths
 .ruff_cache
+
+# pyc ignore:
+__pycache__
+
 
