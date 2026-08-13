@@ -1,0 +1,5 @@
+# All of these are ppm generated things so they dont spill.
+.venv
+.ppm_paths
+.ruff_cache
+

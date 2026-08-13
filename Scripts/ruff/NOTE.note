@@ -1,0 +1,12 @@
+This file contains the binary (even if it is the source)
+as i COULD NOT find the solution to having it installed on releases but not on source.
+
+IMPORTANT: The linux binary is compiled for glibc, so MUSL-Based distros will fail (such as alpine linux).
+
+So, replace ruff with your own version here if you are on such distros.
+
+---
+
+However the windows ruff.exe is built for UCRT (needs Windows 10 or special runtime installer)/
+
+So, ppm check CAN FAIL.
