@@ -541,8 +541,8 @@ def InitProject(
     ExpandedPath = Path(__file__).resolve().parent
     ExpandedPathFile = Path(__file__).resolve()
     PPMScriptDir = ExpandedPath / "Scripts" / "ppm"
-
-    PPMScript = PPMScriptDir / "ppm.bat" if platform == "win32" else "ppm.sh"
+    
+    PPMScript = PPMScriptDir / ("ppm.bat" if platform == "win32" else "ppm.sh")
     with open(PPMScript, "r", encoding="utf-8") as f:
         content = f.read()
         UpdatedCnt = content.replace("REPLACE_WITH_PATH", str(ExpandedPathFile))
