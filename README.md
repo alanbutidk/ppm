@@ -1,4 +1,4 @@
-# PPM - Python Project Manager
+# ppm - Python Project Manager
 
 **ppm** or **Python Project Manager** is a tool written in [Python](https://python.org)
 
@@ -10,7 +10,7 @@ Using ppm CLI is very easy. To get its help, run: `ppm help` or `ppm h` to get i
 
 ```
 ppm - Python Project Manager.
-Version: v1.3.1
+Version: v2.0.0
 
 Commands are:
 
