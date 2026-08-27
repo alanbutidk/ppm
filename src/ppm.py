@@ -653,11 +653,7 @@ def InitProject(
     ExpandedPath = Path(__file__).resolve().parent
     ExpandedPathFile = Path(__file__).resolve()
     PPMScriptDir = ExpandedPath / "Scripts" / "ppm"
-<<<<<<< HEAD:ppm.py
-    
-=======
 
->>>>>>> b7e7a84 (Pyproject support finished, ppm tweaks finished):src/ppm.py
     PPMScript = PPMScriptDir / ("ppm.bat" if platform == "win32" else "ppm.sh")
     with open(PPMScript, "r", encoding="utf-8") as f:
         content = f.read()
@@ -1536,6 +1532,9 @@ def CLI():
             e(1)
 
 
+"""
+# Remove this when needed:
+
 if __name__ == "__main__":
     try:
         CLI()
@@ -1543,3 +1542,4 @@ if __name__ == "__main__":
         print("\n\033[33mControl-C Exit!\033[0m")
     except DependsError as err:
         print(f"\n\033[31mError while handling dependencies: {err}\033[0m")
+"""
