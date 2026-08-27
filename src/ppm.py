@@ -1251,8 +1251,6 @@ def Help():
 {CYN}status/s{RST} :: {YLW}Show project overview (venv, main file, dependency counts){RST}
 {CYN}doctor/doc{RST} :: {YLW}Run a full consistency check across venv, toml, and lockfile (supports --fix){RST}
 {CYN}scan-tree/st{RST} :: {YLW}Recursively print a tree of all Python files in a directory{RST}
-{CYN}help/h{RST} :: {YLW}Print help and exit{RST}
-{CYN}version/v{RST} :: {YLW}Print version and exit{RST}
 """)
 
 
@@ -1287,7 +1285,7 @@ def _GetPositionalArgs(Args: list, flags_with_values: set) -> list:
 def CLI():
     if len(argv) < 2:
         print(
-            f"{RED}No arguments supplied! Use 'help' or 'h' or '--help' or '-h' for usage{RST}."
+            f"{RED}No arguments supplied! Use 'help' or 'h' or '--help' or '-h' for usage.{RST}"
         )
         raise SystemExit
     Arg = argv[1]
@@ -1528,12 +1526,11 @@ def CLI():
             UpdateCommand(Depends if Depends else None, dry_run=DryRun)
             e(0)
         case _:
-            print(f"{RED}Unknown command: {Arg}. Use 'help' or 'h' for usage{RST}.")
+            print(
+                f"{RED}Unknown command: {Arg}. Use 'help' or 'h' or '--help' or '-h' for usage.{RST}"
+            )
             e(1)
 
-
-"""
-# Remove this when needed:
 
 if __name__ == "__main__":
     try:
@@ -1542,4 +1539,3 @@ if __name__ == "__main__":
         print("\n\033[33mControl-C Exit!\033[0m")
     except DependsError as err:
         print(f"\n\033[31mError while handling dependencies: {err}\033[0m")
-"""
