@@ -1,3 +1,5 @@
+# ruff: noqa
+
 from AddSrcDirToPyImportPath import AddPPMDirPath
 
 AddPPMDirPath()

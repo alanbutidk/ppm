@@ -6,6 +6,11 @@ from AddSrcDirToPyImportPath import AddPPMDirPath
 
 AddPPMDirPath()
 
-from ppm import build_venv
+from os import chdir
+from pathlib import Path
+from ppm import build_base
 
-build_venv(color=True, shush=False)
+testdir = Path("test").mkdir(parents=True, exist_ok=True)
+chdir("Test")
+
+build_base(color=True, shush=False)

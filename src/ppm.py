@@ -34,6 +34,7 @@ Call Help() for CLI Usage and short info.
 """
 
 # from-based imports
+import shutil
 from typing import Any, Optional
 from venv import create
 from pathlib import Path
@@ -42,7 +43,7 @@ from sys import exit as e  # This decision was taken after this whole file was w
 from subprocess import run
 from os import chmod, environ, chdir, pathsep, stat
 from stat import S_IXGRP, S_IXOTH, S_IXUSR
-from shutil import rmtree
+from shutil import rmtree, which
 from re import split
 
 # Custom files:
@@ -66,6 +67,9 @@ __all__ = [
     for name, obj in globals().items()
     if not name.startswith("_") and inspect.isfunction(obj) and inspect.isclass(obj)
 ]  # pyright: ignore
+
+__copyright__ = "Copyright (c) 2026 Alan. All Rights Reserved."
+__license__ = "GPL-3.0-only"
 
 
 EXE = ".exe" if platform == "win32" else ""
@@ -670,7 +674,7 @@ def InitProject(
             chmod(FullFileName, ExecModeStats)
 
     # Check if user has git in PATH and init the project dir if there is.
-    if run("git --version", capture_output=True, text=True).returncode == 0:
+    if which("git") and not Path(f"{environ['PPM_DIR']}/.git").exists():
         run(f"git init {environ['PPM_DIR']}", capture_output=True)
 
     if not Silent:
@@ -682,12 +686,16 @@ def DeInitProject() -> None | bool:
     # RED = "\033[31m" # Uncomment this when needed.
     CYN = "\033[36m"
     RST = "\033[0m"
+    main_file = _GetMainFileFromTOML()
+
     delete_base(color=True, delete_ppm_paths=True)
     Path(".gitignore").unlink() if Path(".gitignore").exists() else ""
     Path("ppm.lock").unlink() if Path("ppm.lock").exists() else ""
     Path("ppm.toml").unlink() if Path("ppm.toml").exists() else ""
     Path("pyrightconfig.json").unlink() if Path("pyrightconfig.json").exists() else ""
     Path("pyproject.toml").unlink() if Path("pyproject.toml").exists() else ""
+    rmtree(".git") if Path(".git").exists() else ""
+    Path(main_file).unlink() if main_file and Path(main_file).exists() else ""
 
     print(f"{CYN}Deinitialized project!{RST}")
     return True
@@ -750,7 +758,8 @@ def RunProject(
     if use_global:
         PythonPath = executable
     else:
-        LoadEnv()
+        if Path(".ppm_paths").exists():
+            LoadEnv()
         BinDir = "Scripts" if platform == "win32" else "bin"
         PythonPath = environ.get("PPM_PYTHON", f".venv/{BinDir}/python{EXE}")
     Cmd = [PythonPath, MainFile] + (extra_args or [])
@@ -1282,7 +1291,7 @@ def _GetPositionalArgs(Args: list, flags_with_values: set) -> list:
     return Positional
 
 
-def CLI():
+def _CLI():
     if len(argv) < 2:
         print(
             f"{RED}No arguments supplied! Use 'help' or 'h' or '--help' or '-h' for usage.{RST}"
@@ -1343,7 +1352,7 @@ def CLI():
             e(0)
         case "version" | "v" | "--version" | "-v":
             print(
-                f"{CYN}{UL}ppm{RST} {CYN}- {UL}Python Project Manager{RST}{CYN}, v3.0.0{RST}"
+                f"{CYN}{UL}ppm{RST} {CYN}- {UL}Python Project Manager{RST}{CYN}, v3.0.1{RST}"
             )
             e(0)
         case "deinit" | "di":
@@ -1534,7 +1543,7 @@ def CLI():
 
 if __name__ == "__main__":
     try:
-        CLI()
+        _CLI()
     except KeyboardInterrupt:
         print("\n\033[33mControl-C Exit!\033[0m")
     except DependsError as err:

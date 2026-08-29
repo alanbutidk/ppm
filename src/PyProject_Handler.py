@@ -100,13 +100,6 @@ def GenFullPyProject(ppmConfig: dict):
             (k for k in SPDX_LICENSES_MAPPING if k.lower() == provided_lic.lower()),
             "GPL-3.0-only",
         )
-        pt.add("license", {"text": matched_license})
-
-    deps_list = [
-        f"{pkg}{ver}" for pkg, ver in ppmConfig.get("dependencies", {}).items()
-    ]
-    pt.add("dependencies", deps_list)
-    doc.add_table(pt)
 
     deps_list = [
         f"{pkg}{ver}" for pkg, ver in ppmConfig.get("dependencies", {}).items()
@@ -133,7 +126,7 @@ def GenFullPyProject(ppmConfig: dict):
 
     ppm_tool = TOMLTable("tool.ppm")
     ppm_tool.add("managed-by", "ppm-cli")
-    ppm_tool.add("version", "3.0.0")
+    ppm_tool.add("version", "3.0.1")
     doc.add_table(ppm_tool)
 
     with open("pyproject.toml", "w", encoding="utf-8") as f:
