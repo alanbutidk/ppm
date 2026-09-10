@@ -3,7 +3,7 @@ pyproject handler for ppm.
 Copyright (c) 2026 Alan. All Rights Reserved.
 """
 
-from TOMLFile_Helper import TOMLDocument, TOMLTable
+from .TOMLFile_Helper import TOMLDocument, TOMLTable
 
 SPDX_LICENSES_MAPPING = {
     "CC0-1.0": "Creative Commons Zero v1.0 Universal",

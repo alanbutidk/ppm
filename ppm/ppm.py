@@ -47,11 +47,11 @@ from shutil import rmtree, which
 from re import split
 
 # Custom files:
-from Dotfile_helper import LoadEnv
-from TOMLFile_Helper import TOMLArrayOfTables, TOMLDocument, TOMLTable
-from CloneRepoHandler import CloneRepoHandler, CloneError
-from BuildPy_Helper import Builder
-from PyProject_Handler import GenFullPyProject
+from .Dotfile_helper import LoadEnv
+from .TOMLFile_Helper import TOMLArrayOfTables, TOMLDocument, TOMLTable
+from .CloneRepoHandler import CloneRepoHandler, CloneError
+from .BuildPy_Helper import Builder
+from .PyProject_Handler import GenFullPyProject
 
 # Only import-based imports:
 import tomllib
@@ -68,8 +68,8 @@ __all__ = [
     if not name.startswith("_") and inspect.isfunction(obj) and inspect.isclass(obj)
 ]  # pyright: ignore
 
-__copyright__ = "Copyright (c) 2026 Alan. All Rights Reserved."
-__license__ = "GPL-3.0-only"
+# __copyright__ = "Copyright (c) 2026 Alan. All Rights Reserved."
+# __license__ = "GPL-3.0-only"
 
 
 EXE = ".exe" if platform == "win32" else ""
@@ -1541,6 +1541,7 @@ def _CLI():
             e(1)
 
 
+"""
 if __name__ == "__main__":
     try:
         _CLI()
@@ -1548,3 +1549,4 @@ if __name__ == "__main__":
         print("\n\033[33mControl-C Exit!\033[0m")
     except DependsError as err:
         print(f"\n\033[31mError while handling dependencies: {err}\033[0m")
+"""
