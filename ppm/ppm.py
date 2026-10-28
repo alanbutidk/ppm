@@ -45,6 +45,7 @@ from os import chmod, environ, chdir, pathsep, stat
 from stat import S_IXGRP, S_IXOTH, S_IXUSR
 from shutil import rmtree, which
 from re import split
+from urllib import request as r
 
 # Custom files:
 from .Dotfile_helper import LoadEnv
@@ -133,6 +134,12 @@ def delete_base(color: bool = False, delete_ppm_paths: bool = False) -> None:
             print(f"{YLW}Removed .ppm_paths file!{RST}")
     except OSError:
         pass
+
+
+def _cool_dotdotdot_thing(msg: str, dots: int = 4):
+    for i in range(1, dots):
+        dot_pattern = "." * i
+        print(f"{msg}{dot_pattern}")
 
 
 class DependsHandler:
@@ -251,6 +258,7 @@ class DependsHandler:
                 text=True,
             )
             if Run.returncode != 0:
+                self.install_depends_returncode = 1
                 raise DependsError(
                     f"Error while installing: {i}, Error Output: {Run.stderr}"
                 )
@@ -267,6 +275,7 @@ class DependsHandler:
         self._write_lockfile(packages)
         if printMsg:
             print("\033[36mFinished install(s)!\033[0m")
+        self.install_depends_returncode = 0
 
     def InstallFromRequirements(
         self, filename: str = "requirements.txt", dry_run: bool = False
@@ -309,6 +318,7 @@ class DependsHandler:
                 text=True,
             )
             if Run.returncode != 0:
+                self.delete_depends_returncode = 1
                 raise DependsError(
                     f"Error while deleting/uninstalling: {i}, Error Output: {Run.stderr}"
                 )
@@ -319,6 +329,7 @@ class DependsHandler:
             return
         self._write_lockfile(packages)
         print("\033[36mUninstalled package(s)!\033[0m")
+        self.delete_depends_returncode = 0
 
     def CartDepend(self, DependsToCart: list):
         """Adds a package entry directly to the lockfile without invoking pip install."""
@@ -441,6 +452,7 @@ class DependsHandler:
                 text=True,
             )
             if Run.returncode != 0:
+                self.update_depends_returncode = 1
                 raise DependsError(
                     f"Error while updating: {i}, Error Output: {Run.stderr}"
                 )
@@ -450,6 +462,7 @@ class DependsHandler:
 
         self._write_lockfile(packages)
         print("\033[36mFinished update(s)!\033[0m")
+        self.delete_depends_returncode = 0
 
 
 class ProjectTOMLHandler:
@@ -494,6 +507,8 @@ def RuffCheck(File: str, fix=False) -> bool | tuple:
     RuffPath = (
         (Path(__file__).parent / "Scripts" / "ruff" / f"ruff{EXE}").resolve().as_posix()
     )
+    if platform != "win32":
+        Path(RuffPath).chmod(0o755)
     CMD = f"{RuffPath} {CMD}"
     Run = run(CMD.split(), capture_output=True, text=True)
     if Run.returncode != 0:
@@ -655,13 +670,12 @@ def InitProject(
             json.dump(existing_data, f, indent=4)
 
     ExpandedPath = Path(__file__).resolve().parent
-    ExpandedPathFile = Path(__file__).resolve()
     PPMScriptDir = ExpandedPath / "Scripts" / "ppm"
 
     PPMScript = PPMScriptDir / ("ppm.bat" if platform == "win32" else "ppm.sh")
     with open(PPMScript, "r", encoding="utf-8") as f:
         content = f.read()
-        UpdatedCnt = content.replace("REPLACE_WITH_PATH", str(ExpandedPathFile))
+        UpdatedCnt = content.replace("REPLACE_WITH_PATH", str(ExpandedPath))
         FileName = "ppm.bat" if platform == "win32" else "ppm.sh"
 
         with open(f"{environ['PPM_DIR']}/{FileName}", "w") as file:
@@ -675,8 +689,11 @@ def InitProject(
 
     # Check if user has git in PATH and init the project dir if there is.
     if which("git") and not Path(f"{environ['PPM_DIR']}/.git").exists():
-        run(f"git init {environ['PPM_DIR']}", capture_output=True)
-
+        result = run(
+            f"git init {environ['PPM_DIR']}", capture_output=True, text=True, shell=True
+        )
+        if result.returncode != 0:
+            print(f"{RED}Error while initializing git repository: {result.stderr}{RST}")
     if not Silent:
         print(f"{CYN}Initialized project!{RST}")
 
@@ -837,6 +854,7 @@ def UpdateCommand(Depends: Optional[list] = None, dry_run: bool = False):
     """Updates the given dependencies (or all installed ones) to their latest version."""
     Handler = DependsHandler()
     Handler.UpdateDepends(Depends if Depends else None, dry_run=dry_run)
+    return Handler.update_depends_returncode if Handler.update_depends_returncode else 0
 
 
 def StatusCommand():
@@ -1188,16 +1206,43 @@ def CloneCommand(url: str, dest: str | None = None, branch: str | None = None):
     print(f"{CYN}Project ready in '{dest}'!{RST}")
 
 
+def GetExamplesCommand():
+    url = "https://github.comalanbutidk/ppm/contents/examples"
+    req = r.Request(url, headers={"User-Agent": "PPMExamplesFetcher"})
+    try:
+        with r.urlopen(req) as resp:
+            items = json.loads(resp.read().decode())
+        local_dest = Path("examples")
+        local_dest.mkdir(parents=True, exist_ok=True)
+
+        for item in items:
+            if item["type"] == "file":
+                file_url = item["download_url"]
+                file_dest = local_dest / item["name"]
+                _cool_dotdotdot_thing("Downloading")
+                r.urlretrieve(file_url, file_dest)
+            elif item["type"] == "dir":
+                new_remote = f"examples/{item['name']}"
+                new_local = local_dest / item["name"]
+                GetExamplesCommand()
+    except Exception as e:
+        print(f"\033[31mError fetching directory: {e}\033[0m")
+
+
 def InstallCommand(Depends: list, dry_run: bool = False):
     """Installs the given dependencies to the project."""
     Handler = DependsHandler(Depends)
     Handler.InstallDepends(dry_run=dry_run)
+    return (
+        Handler.install_depends_returncode if Handler.install_depends_returncode else 0
+    )
 
 
 def UninstallCommand(Depends: list, dry_run: bool = False):
     """Uninstalls the given dependencies from the project."""
     Handler = DependsHandler()
     Handler.DeleteDepends(Depends, dry_run=dry_run)
+    return Handler.delete_depends_returncode if Handler.delete_depends_returncode else 0
 
 
 def BuildBaseCommand():
@@ -1239,6 +1284,7 @@ def Help():
 {CYN}init/in{RST} :: {YLW}Initialize a project (also writes pyproject.toml){RST}
 {CYN}deinit/di{RST} :: {YLW}Deinitialize a project{RST}
 {CYN}clone/cl{RST} :: {YLW}Clone a git repo (no system git required) and set up its dependencies{RST}
+{CYN}examples/ex{RST} :: {YLW}Get ppm examples{RST}
 
 {CYN}check/c{RST} :: {YLW}Check project using ruff.{RST}
 {CYN}clear-rc/crc{RST} :: {YLW}Clear cache generated by ruff{RST}
@@ -1296,7 +1342,7 @@ def _CLI():
         print(
             f"{RED}No arguments supplied! Use 'help' or 'h' or '--help' or '-h' for usage.{RST}"
         )
-        raise SystemExit
+        e(1)
     Arg = argv[1]
     Args = argv[1:]
     if Args[0] == "init" or Args[0] == "in":
@@ -1352,7 +1398,7 @@ def _CLI():
             e(0)
         case "version" | "v" | "--version" | "-v":
             print(
-                f"{CYN}{UL}ppm{RST} {CYN}- {UL}Python Project Manager{RST}{CYN}, v3.0.1{RST}"
+                f"{CYN}{UL}ppm{RST} {CYN}- {UL}Python Project Manager{RST}{CYN}, v3.1.0{RST}"
             )
             e(0)
         case "deinit" | "di":
@@ -1466,6 +1512,9 @@ def _CLI():
         case "build-base" | "bb":
             BuildBaseCommand()
             e(0)
+        case "examples" | "ex":
+            GetExamplesCommand()
+            e(0)
         case "order" | "o":
             OrderCommand()
             e(0)
@@ -1477,8 +1526,8 @@ def _CLI():
                     f"{RED}No dependencies supplied! Use 'install <pkg> [pkg...] [--dry-run]'{RST}."
                 )
                 e(1)
-            InstallCommand(Depends, dry_run=DryRun)
-            e(0)
+            rcode = InstallCommand(Depends, dry_run=DryRun)
+            e(rcode)
         case "uninstall" | "u":
             DryRun = "--dry-run" in Args
             Depends = [a for a in Args[1:] if a != "--dry-run"]
@@ -1487,8 +1536,8 @@ def _CLI():
                     f"{RED}No dependencies supplied! Use 'uninstall <pkg> [pkg...] [--dry-run]'{RST}."
                 )
                 e(1)
-            UninstallCommand(Depends, dry_run=DryRun)
-            e(0)
+            rcode = UninstallCommand(Depends, dry_run=DryRun)
+            e(rcode)
         case "list" | "l":
             ListCommand()
             e(0)
@@ -1532,8 +1581,8 @@ def _CLI():
         case "update" | "up":
             DryRun = "--dry-run" in Args
             Depends = [a for a in Args[1:] if a != "--dry-run"]
-            UpdateCommand(Depends if Depends else None, dry_run=DryRun)
-            e(0)
+            rcode = UpdateCommand(Depends if Depends else None, dry_run=DryRun)
+            e(rcode)
         case _:
             print(
                 f"{RED}Unknown command: {Arg}. Use 'help' or 'h' or '--help' or '-h' for usage.{RST}"

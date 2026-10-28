@@ -1,3 +1,4 @@
 #!/bin/sh
-python3 REPLACE_WITH_PATH
+cd REPLACE_WITH_PATH & python3 -m ppm $@ & cd $(dirname "$(dirname "$(readlink -f "$0")")")
+
 

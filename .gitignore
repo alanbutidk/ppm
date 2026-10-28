@@ -2,3 +2,12 @@ src/__pycache__
 __pycache__
 .venv
 
+
+# This part is appended by ppm after detecting a .gitignore in this directory.
+.ppm_paths
+.venv
+ppm.bat
+# This part is appended by ppm after detecting a .gitignore in this directory.
+.ppm_paths
+.venv
+ppm.bat
