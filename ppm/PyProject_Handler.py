@@ -126,7 +126,7 @@ def GenFullPyProject(ppmConfig: dict):
 
     ppm_tool = TOMLTable("tool.ppm")
     ppm_tool.add("managed-by", "ppm-cli")
-    ppm_tool.add("version", "3.0.1")
+    ppm_tool.add("version", "3.1.0")
     doc.add_table(ppm_tool)
 
     with open("pyproject.toml", "w", encoding="utf-8") as f:
