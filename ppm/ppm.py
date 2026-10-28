@@ -93,10 +93,11 @@ def build_base(color=False, shush=False) -> bool | tuple:
     create(EnvDir, with_pip=True)
     BinDir = "Scripts" if platform == "win32" else "bin"
     Paths = [
-        f'PPM_DIR="{str(Path(EnvDir).parent).replace("\\", "/")}/"',
+        f'PPM_DIR="{str(Path(EnvDir).parent)}/',
         f'PPM_PYTHON="{EnvDir}/{BinDir}/python{EXE}"',
         f'PPM_PIP="{EnvDir}/{BinDir}/pip{EXE}"',
     ]
+    Paths[0].replace("\\", "/")
 
     with open(".ppm_paths", "w") as f:
         f.writelines(line + "\n" for line in Paths)
@@ -675,7 +676,7 @@ def InitProject(
     PPMScript = PPMScriptDir / ("ppm.bat" if platform == "win32" else "ppm.sh")
     with open(PPMScript, "r", encoding="utf-8") as f:
         content = f.read()
-        UpdatedCnt = content.replace("REPLACE_WITH_PATH", str(ExpandedPath))
+        UpdatedCnt = content.replace("REPLACE_WITH_PATH", str(ExpandedPath.parent))
         FileName = "ppm.bat" if platform == "win32" else "ppm.sh"
 
         with open(f"{environ['PPM_DIR']}/{FileName}", "w") as file:
@@ -703,7 +704,7 @@ def DeInitProject() -> None | bool:
     # RED = "\033[31m" # Uncomment this when needed.
     CYN = "\033[36m"
     RST = "\033[0m"
-    main_file = _GetMainFileFromTOML()
+    # main_file = _GetMainFileFromTOML()
 
     delete_base(color=True, delete_ppm_paths=True)
     Path(".gitignore").unlink() if Path(".gitignore").exists() else ""
@@ -712,7 +713,7 @@ def DeInitProject() -> None | bool:
     Path("pyrightconfig.json").unlink() if Path("pyrightconfig.json").exists() else ""
     Path("pyproject.toml").unlink() if Path("pyproject.toml").exists() else ""
     rmtree(".git") if Path(".git").exists() else ""
-    Path(main_file).unlink() if main_file and Path(main_file).exists() else ""
+    # Path(main_file).unlink() if main_file and Path(main_file).exists() else "" # Commented to protect incidents (from experience)
 
     print(f"{CYN}Deinitialized project!{RST}")
     return True
@@ -1398,7 +1399,7 @@ def _CLI():
             e(0)
         case "version" | "v" | "--version" | "-v":
             print(
-                f"{CYN}{UL}ppm{RST} {CYN}- {UL}Python Project Manager{RST}{CYN}, v3.1.0{RST}"
+                f"{CYN}{UL}ppm{RST} {CYN}- {UL}Python Project Manager{RST}{CYN}, v3.1.1{RST}"
             )
             e(0)
         case "deinit" | "di":
